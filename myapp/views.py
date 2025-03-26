@@ -1,10 +1,15 @@
 from django.shortcuts import render
+from django.http import JsonResponse
+from myapp.tasks import generate_and_upload_csv
 # from myceleryproject.celery import sub
+# from myapp.tasks import add
 
 # def index(request):
 #     print("Results: ")
 #     result1=sub.delay(10,20)
 #     print("Results 1:", result1)
+#     result2=add.delay(10,20)
+#     print("Results 2:", result2)
 #     return render(request,"home.html")
 
 # def about(request):
@@ -13,18 +18,8 @@ from django.shortcuts import render
 # def contact(request):
 #     return render(request,'contact.html')
 
-from django.http import JsonResponse
-from .task import upload_csv
-import os
+def start_csv_process(request):
+    task = generate_and_upload_csv.delay()
+    return JsonResponse({"message": "CSV Generation & Upload Started!" })
 
-def upload_all_csv(request):
-    folder_path = "csv_files"
-    if not os.path.exists(folder_path):
-        return JsonResponse({"error": "CSV folder not found"}, status=400)
 
-    files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(".csv")]
-    
-    for file in files:
-        upload_csv.delay(file)
-    
-    return JsonResponse({"message": "CSV upload started!"})

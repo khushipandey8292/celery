@@ -1,3 +1,6 @@
 from django.contrib import admin
+from myapp.models import UserData
 
-# Register your models here.
+@admin.register(UserData)
+class UserDataAdmin(admin.ModelAdmin):
+    list_display=['user_id','name','uploaded_at']
